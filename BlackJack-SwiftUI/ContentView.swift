@@ -7,18 +7,20 @@
 
 import SwiftUI
 
+// FIXME: Initalize view
 struct ContentView: View {
+    @StateObject var vm: BlackJackStore
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Image("2_of_clubs")
+                .resizable()
+                .scaledToFit()
+            Text("\(vm.deck)")
         }
         .padding()
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView(vm: BlackJackStore())
 }
