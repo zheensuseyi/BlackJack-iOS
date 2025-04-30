@@ -8,7 +8,7 @@
 import Foundation
 // FIXME: Figure out bet amount
 struct GameSettings {
-    struct Player {
+    struct Player { // Blueprint for a player, also used for dealer
         var name: String
         var hand: Array<String> = []
         var cardSum: Int = 0
@@ -17,47 +17,49 @@ struct GameSettings {
             self.name = name
         }
     }
-    private(set) var money = 100000.0
-    private(set) var handValues = ["2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11]
-    private(set) var dealer = Player(name: "Dealer")
-    private(set) var user: Player = Player(name: "You")
-    private(set) var deck: Array<String> = []
-    private(set) var betAmount: Double = 1
-    private(set) var liveHand: Bool = false
+    private(set) var handValues = ["2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11] // how hand values are calculated
+    private(set) var money: Double = 100000 // users money
+    private(set) var dealer = Player(name: "Dealer") // initalizing dealer
+    private(set) var user: Player = Player(name: "You") // initalizing user
+    private(set) var deck: Array<String> = [] // deck, will be initalized in init()
+    private(set) var betAmount: Double = 5000 // FIXME: make it so that user can choose bet amount
+    private(set) var liveHand: Bool = false // checks if hand is currently being played
     
     init() { // will get the betAmount each hand from the player in the view, deck also gets initalized here
         deck = initalizeDeck()
     }
 
     mutating func newHand() -> () {
-        if betAmount > money {
-            print("Not enough funds")
-            return
-        }
-        if user.cardSum == 21 {
-            print("Blackjack!")
-            money += ((betAmount * 2) * (3/2))
-            clearBoard()
+        if money < betAmount || liveHand {
+            print("Please select a valid action")
             return
         }
         resetHand()
-    }
-    mutating func resetHand() { // helper function for newHand
-        clearBoard()
-        deck = initalizeDeck()
-        liveHand = true
-        money -= betAmount
-        user = cardHit(player: user)
-        user = cardHit(player: user)
-        dealer = cardHit(player: dealer)
+        debuggingStatements()
+        if user.cardSum == 21 {
+            print("Blackjack!")
+            money += ((betAmount * 2) * (3/2))
+            liveHand = false
+            return
+        }
     }
     
-    // FIXME: hit function for both player and dealer
-    mutating func cardHit(player: Player) -> Player {
+    mutating func userHit() -> () {
         if !liveHand {
-            print("You need to get in a new hand before doing this action")
-            return player
+            print("Please select a valid action")
+            return
         }
+        print("|||||||||||| USER HITS |||||||||||| \n")
+        user = cardHit(player: user)
+        debuggingStatements()
+        if user.bustedHand {
+            print("You busted!")
+            liveHand = false
+            return
+        }
+    }
+    
+    mutating func cardHit(player: Player) -> Player {
         var myPlayer = player
         deck.shuffle()
         myPlayer.hand.append(deck.popLast()!)
@@ -67,8 +69,9 @@ struct GameSettings {
     
     mutating func calculateHandValue(player: Player) -> Player {
         var myPlayer = player
+        myPlayer.cardSum = 0
         for card in 0..<myPlayer.hand.count {
-            let cardValue = myPlayer.hand[card].components(separatedBy: " ")
+            let cardValue = myPlayer.hand[card].components(separatedBy: "-")
             myPlayer.cardSum += handValues[cardValue[0]]!
         }
         if myPlayer.cardSum > 21 {
@@ -80,13 +83,14 @@ struct GameSettings {
     mutating func aceCheck(player: Player) -> Player {
         var myPlayer = player
         for card in 0..<myPlayer.hand.count {
-            let cardValue = myPlayer.hand[card].components(separatedBy: " ")
+            let cardValue = myPlayer.hand[card].components(separatedBy: "-")
             if cardValue[0] == "A" {
                 myPlayer.cardSum -= 10
             }
         }
         if myPlayer.cardSum > 21 {
             myPlayer.bustedHand = true
+            liveHand = false
         }
         return myPlayer
     }
@@ -96,65 +100,68 @@ struct GameSettings {
             print("Please select a valid action")
             return
         }
-        print("You will now double, your turn ends now")
+        print("|||||||||||| USER DOUBLES |||||||||||| \n")
         money -= betAmount
         betAmount *= 2
         user = cardHit(player: user)
+        debuggingStatements()
         if user.bustedHand {
             print("You busted!")
-            clearBoard()
+            liveHand = false
             return
         }
-        compareHands()
+        dealerTurn()
     }
     mutating func stand() -> () {
         if !liveHand {
             print("Please select a valid action")
             return
         }
-        print("You have chosen to stand, current cardSum is \(user.cardSum)")
+        print("|||||||||||| USER STANDS |||||||||||| \n")
         dealerTurn()
     }
     
     mutating func dealerTurn() -> () {
         print("Time for the dealer to draw cards")
         while !dealer.bustedHand {
+            print(" ||||||||| DEALER HITS ||||||||| \n")
             dealer = cardHit(player: dealer)
+            print("Dealer hand: \(dealer.hand)")
+            print("Dealer sum: \(dealer.cardSum)")
             if dealer.cardSum > 16 && dealer.cardSum < 22 {
-                print("Dealer will now stand")
+                print(" ||||||||| DEALER STANDS ||||||||| \n")
+                print("Dealer hand: \(dealer.hand)")
+                print("Dealer sum: \(dealer.cardSum)")
                 compareHands()
                 return
             }
         }
-        print("Dealer busted! You wins")
+        debuggingStatements()
+        print("Dealer busted! You win")
         money += (betAmount * 2)
-        clearBoard()
     }
     
     mutating func compareHands() -> () {
+        debuggingStatements()
         if user.cardSum > dealer.cardSum {
-            print("You win!")
+            print(" ||||||||| USER WINS ||||||||| \n")
             money += (betAmount * 2)
-            clearBoard()
+            liveHand = false
             return
         }
         else if user.cardSum == dealer.cardSum {
-            print("Same value, push")
+            print(" ||||||||| PUSH ||||||||| \n")
             money += betAmount
-            clearBoard()
+            liveHand = false
             return
         }
-        else {
-            print("You lost this hand")
-            clearBoard()
-            return
-        }
+        print(" ||||||||| DEALER WINS ||||||||| \n")
+        liveHand = false
     }
     
-    // helper function to initalize the deck
-    mutating func initalizeDeck() -> [String]{
+    mutating func initalizeDeck() -> [String]{ // helper function to initalize our deck which will consist of 4 standard poker decks
         var cardDeck: Array<String> = []
-        let suits = [" Spades", " Diamonds", " Hearts", " Clubs"]
+        let suits = ["-S", "-D", "-H", "-C"]
         let names = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
         for suit in suits {
             for name in names {
@@ -164,15 +171,39 @@ struct GameSettings {
         return cardDeck.shuffled()
     }
 
-    mutating func clearBoard() { // clears the game, resets all previous hand activities except for money and name
+    mutating func resetHand() { // helper function for newHand
         user = Player(name: user.name)
         dealer = Player(name: dealer.name)
         deck.removeAll()
-        liveHand = false
+        deck = initalizeDeck()
+        liveHand = true
+        betAmount = 5000
+        money -= betAmount
+        user = cardHit(player: user)
+        user = cardHit(player: user)
+        dealer = cardHit(player: dealer)
     }
     
-    // FIXME: Figure out splitting after you test some functionality
-    mutating func split() -> () {
+    func debuggingStatements() { // for debugging
+        print("USER HAND: \(user.hand)")
+        print("USER SUM: \(user.cardSum)")
+        print("DEALER HAND: \(dealer.hand)")
+        print("DEALER SUM: \(dealer.cardSum)")
+    }
+    
+    mutating func split() -> () { // FIXME: Split hands
+        var canSplit = false
+        if handValues[user.hand[0]] == handValues[user.hand[1]] {
+            canSplit = true
+        }
+        if user.hand.count > 2 || !liveHand || !canSplit || money < betAmount {
+            print("Please select a valid action")
+            return
+        }
+        print(" ||||||||| USER WILL NOW SPLIT ||||||||| \n")
+        var user2: Player = Player(name: "You2") // initalizing user
+        user2.hand.append(user.hand.popLast()!)
+
     }
     
     

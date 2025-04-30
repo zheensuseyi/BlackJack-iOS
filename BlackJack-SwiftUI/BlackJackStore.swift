@@ -8,29 +8,38 @@
 import SwiftUI
 // FIXME: Work on VM
 class BlackJackStore: ObservableObject {
-  /*  @Published var userBet: Double
-    init(userBet: Double) {
-        self.userBet = userBet
-    }*/
-    var game: GameSettings = GameSettings()
-
+    @Published var game: GameSettings = GameSettings()
+    var user: GameSettings.Player {
+        game.user
+    }
     var money: Double {
-        return game.money
+        game.money
     }
     var dealer: GameSettings.Player {
-        return game.dealer
+        game.dealer
     }
-    var user: GameSettings.Player {
-        return game.user
-    }
+
     var deck: Array<String> {
-        return game.deck
+        game.deck
     }
     var liveHand: Bool {
-        return game.liveHand
+        game.liveHand
     }
     var handValues: [String: Int] {
-        return game.handValues
+        game.handValues
+    }
+    
+    func newHand() {
+        game.newHand()
+    }
+    func hit() {
+        game.userHit()
+    }
+    func stand() {
+        game.stand()
+    }
+    func double() {
+        game.double()
     }
     
 }

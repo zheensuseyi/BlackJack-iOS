@@ -12,10 +12,24 @@ struct ContentView: View {
     @StateObject var vm: BlackJackStore
     var body: some View {
         VStack {
-            Image("2_of_clubs")
+            Image("2-C")
                 .resizable()
                 .scaledToFit()
-            Text("\(vm.deck)")
+            Text("\(vm.money)")
+            HStack {
+                Button("New Hand") {
+                    vm.newHand()
+                }
+                Button("hit") {
+                    vm.hit()
+                }
+                Button("stand") {
+                    vm.stand()
+                }
+                Button("double") {
+                    vm.double()
+                }
+            }
         }
         .padding()
     }
