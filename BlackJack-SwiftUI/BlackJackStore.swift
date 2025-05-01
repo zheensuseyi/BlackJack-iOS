@@ -18,17 +18,9 @@ class BlackJackStore: ObservableObject {
     var dealer: GameSettings.Player {
         game.dealer
     }
-
-    var deck: Array<String> {
-        game.deck
-    }
     var liveHand: Bool {
         game.liveHand
     }
-    var handValues: [String: Int] {
-        game.handValues
-    }
-    
     func newHand() {
         game.newHand()
     }

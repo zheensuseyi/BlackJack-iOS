@@ -8,21 +8,25 @@
 
 /* Begin PBXBuildFile section */
 		AD194EE32DBC3EA200C9FC02 /* BlackJack_SwiftUIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD194EE22DBC3EA200C9FC02 /* BlackJack_SwiftUIApp.swift */; };
-		AD194EE52DBC3EA200C9FC02 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD194EE42DBC3EA200C9FC02 /* ContentView.swift */; };
 		AD194EE72DBC3EA500C9FC02 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD194EE62DBC3EA500C9FC02 /* Assets.xcassets */; };
 		AD194EEA2DBC3EA500C9FC02 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD194EE92DBC3EA500C9FC02 /* Preview Assets.xcassets */; };
 		AD194EF12DBC3EC600C9FC02 /* GameSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD194EF02DBC3EC600C9FC02 /* GameSettings.swift */; };
 		AD25BC262DC191CB00FD900A /* BlackJackStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD25BC252DC191CB00FD900A /* BlackJackStore.swift */; };
+		AD667B4C2DC40EBC00153032 /* DealerCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD667B4B2DC40EBC00153032 /* DealerCardView.swift */; };
+		AD667B4E2DC40ED900153032 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD667B4D2DC40ED900153032 /* GameView.swift */; };
+		AD667B502DC40F6200153032 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD667B4F2DC40F6200153032 /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		AD194EDF2DBC3EA200C9FC02 /* BlackJack-SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BlackJack-SwiftUI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD194EE22DBC3EA200C9FC02 /* BlackJack_SwiftUIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackJack_SwiftUIApp.swift; sourceTree = "<group>"; };
-		AD194EE42DBC3EA200C9FC02 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AD194EE62DBC3EA500C9FC02 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AD194EE92DBC3EA500C9FC02 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AD194EF02DBC3EC600C9FC02 /* GameSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSettings.swift; sourceTree = "<group>"; };
 		AD25BC252DC191CB00FD900A /* BlackJackStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackJackStore.swift; sourceTree = "<group>"; };
+		AD667B4B2DC40EBC00153032 /* DealerCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DealerCardView.swift; sourceTree = "<group>"; };
+		AD667B4D2DC40ED900153032 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		AD667B4F2DC40F6200153032 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,9 +60,11 @@
 			isa = PBXGroup;
 			children = (
 				AD194EE22DBC3EA200C9FC02 /* BlackJack_SwiftUIApp.swift */,
-				AD194EE42DBC3EA200C9FC02 /* ContentView.swift */,
+				AD667B4D2DC40ED900153032 /* GameView.swift */,
+				AD667B4B2DC40EBC00153032 /* DealerCardView.swift */,
 				AD25BC252DC191CB00FD900A /* BlackJackStore.swift */,
 				AD194EF02DBC3EC600C9FC02 /* GameSettings.swift */,
+				AD667B4F2DC40F6200153032 /* Extensions.swift */,
 				AD194EE62DBC3EA500C9FC02 /* Assets.xcassets */,
 				AD194EE82DBC3EA500C9FC02 /* Preview Content */,
 			);
@@ -143,9 +149,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AD194EE52DBC3EA200C9FC02 /* ContentView.swift in Sources */,
 				AD194EE32DBC3EA200C9FC02 /* BlackJack_SwiftUIApp.swift in Sources */,
+				AD667B502DC40F6200153032 /* Extensions.swift in Sources */,
 				AD25BC262DC191CB00FD900A /* BlackJackStore.swift in Sources */,
+				AD667B4C2DC40EBC00153032 /* DealerCardView.swift in Sources */,
+				AD667B4E2DC40ED900153032 /* GameView.swift in Sources */,
 				AD194EF12DBC3EC600C9FC02 /* GameSettings.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

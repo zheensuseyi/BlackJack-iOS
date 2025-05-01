@@ -101,8 +101,7 @@ struct GameSettings {
             return
         }
         print("|||||||||||| USER DOUBLES |||||||||||| \n")
-        money -= betAmount
-        betAmount *= 2
+        money -= betAmount; betAmount *= 2
         user = cardHit(player: user)
         debuggingStatements()
         if user.bustedHand {
@@ -177,8 +176,7 @@ struct GameSettings {
         deck.removeAll()
         deck = initalizeDeck()
         liveHand = true
-        betAmount = 5000
-        money -= betAmount
+        betAmount = 5000; money -= betAmount
         user = cardHit(player: user)
         user = cardHit(player: user)
         dealer = cardHit(player: dealer)
@@ -190,23 +188,7 @@ struct GameSettings {
         print("DEALER HAND: \(dealer.hand)")
         print("DEALER SUM: \(dealer.cardSum)")
     }
-    
-    mutating func split() -> () { // FIXME: Split hands
-        var canSplit = false
-        if handValues[user.hand[0]] == handValues[user.hand[1]] {
-            canSplit = true
-        }
-        if user.hand.count > 2 || !liveHand || !canSplit || money < betAmount {
-            print("Please select a valid action")
-            return
-        }
-        print(" ||||||||| USER WILL NOW SPLIT ||||||||| \n")
-        var user2: Player = Player(name: "You2") // initalizing user
-        user2.hand.append(user.hand.popLast()!)
 
-    }
-    
-    
 }
 
 /*
