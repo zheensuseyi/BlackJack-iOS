@@ -16,7 +16,7 @@ struct GameView: View {
             casinoTurfGradient()
             VStack {
                 HStack {
-                    Button("New Hand") {
+                    Button("New Hand ") {
                         vm.newHand()
                         inHand = true
                     }
