@@ -10,7 +10,8 @@ import SwiftUI
 // FIXME: Initalize view
 struct GameView: View {
     @StateObject var vm: BlackJackStore
-    @State private var inHand = false
+    
+    // FIXME: Make a grid so cards don't go out of bounds
     var body: some View {
         ZStack {
             casinoTurfGradient()
@@ -18,14 +19,11 @@ struct GameView: View {
                 HStack {
                     Button("New Hand ") {
                         vm.newHand()
-                        inHand = true
                     }
                 }
                 Text("Zheens Casino")
                     .mainTitleText()
-                if inHand {
-                    displayHands
-                }
+                displayHands
                 Spacer()
                 Text("\(vm.money)")
                 HStack {
@@ -61,8 +59,9 @@ struct GameView: View {
                     .frame(width: 100, height: 100)  // Set the desired size
                 
             }
-            .padding()
         }
+        .padding()
+
     }
 }
 
