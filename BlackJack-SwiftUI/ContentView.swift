@@ -15,7 +15,7 @@ struct ContentView: View {
             Image("2-C")
                 .resizable()
                 .scaledToFit()
-            Text("\(vm.money)")
+            Text("\(vm.money) c")
             HStack {
                 Button("New Hand") {
                     vm.newHand()
