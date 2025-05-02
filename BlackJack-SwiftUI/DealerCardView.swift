@@ -9,7 +9,6 @@ import SwiftUI
 
 // FIXME: Make this file a grid with dynamically adjusting collums so that the cards dont go out of bounds
 // FIXME: ADD ANIMATIONS TO THE CARDS
-// FIXME:
 struct DealerCardView: View, Animatable {
     @ObservedObject var vm: BlackJackStore
     var body: some View {

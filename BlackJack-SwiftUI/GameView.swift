@@ -7,7 +7,10 @@
 
 import SwiftUI
 
-// FIXME: Initalize view
+// FIXME: Clean up code
+// FIXME: Change buttons
+// FIXME: Add alerts
+// FIXME: Add animations
 struct GameView: View {
     @StateObject var vm: BlackJackStore
     
@@ -17,25 +20,20 @@ struct GameView: View {
             casinoTurfGradient()
             VStack {
                 HStack {
-                    Button("New Hand ") {
+                    betButtons
+                    Spacer()
+                    Button("New Hand") {
                         vm.newHand()
                     }
+                    Spacer()
+                    Text("$\(vm.money)")
                 }
-                Text("Zheens Casino")
-                    .mainTitleText()
-                displayHands
+                dealerHand
                 Spacer()
-                Text("\(vm.money)")
+                userHand
                 HStack {
-                    Button("hit") {
-                        vm.hit()
-                    }
-                    Button("stand") {
-                        vm.stand()
-                    }
-                    Button("double") {
-                        vm.double()
-                    }
+                    handButtons
+                        .font(.headline)
                 }
             }
             .padding()
@@ -43,7 +41,7 @@ struct GameView: View {
     }
     
     @ViewBuilder
-    private var displayHands: some View {
+    private var dealerHand: some View {
         HStack {
             ForEach(vm.dealer.hand, id: \.self) { card in
                 Image(card)
@@ -51,17 +49,79 @@ struct GameView: View {
                     .frame(width: 100, height: 100)  // Set the desired size
             }
         }
-        Spacer()
+        .padding()
+    }
+    
+    @ViewBuilder
+    private var userHand: some View {
         HStack {
             ForEach(vm.user.hand, id: \.self) { card in
                 Image(card)
                     .resizable()  // Make the image resizable
                     .frame(width: 100, height: 100)  // Set the desired size
-                
             }
         }
-        .padding()
-
+    }
+    
+    @ViewBuilder
+    private var betButtons: some View {
+        VStack {
+            Text("Bet: $\(vm.betAmount)")
+            HStack {
+                Button(action: {
+                    vm.increaseBetAmount()
+                }) {
+                    Image(systemName: "plus.square.fill") // Or use Image("yourImageName") for assets
+                        .resizable()
+                        .frame(width: 25, height: 25)
+                        .foregroundColor(.white)
+                }
+                Button(action: {
+                    vm.decreaseBetAmount()
+                }) {
+                    Image(systemName: "minus.square.fill") // Or use Image("yourImageName") for assets
+                        .resizable()
+                        .frame(width: 25, height: 25)
+                        .foregroundColor(.white)
+                }
+            }
+            .background(casinoTurfGradient())
+            .overlay(
+                RoundedRectangle(cornerRadius: 0)
+                    .stroke(Color.black, lineWidth: 2)
+            )
+        }
+        
+    }
+    @ViewBuilder
+    private var handButtons: some View { // FIXME: Make this shorter
+        Button(action: {
+            vm.stand()
+        }) {
+            VStack {
+                Text("🐈")
+                Text("STAND")
+            }
+            .font(.headline)
+        }
+        Spacer()
+        Button(action: {
+            vm.hit()
+        }) {
+            VStack {
+                Text("👊")
+                Text("HIT")
+            }
+        }
+        Spacer()
+        Button(action: {
+            vm.double()
+        }) {
+            VStack {
+                Text("🤑")
+                Text("Double")
+            }
+        }
     }
 }
 

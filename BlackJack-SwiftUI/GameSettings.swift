@@ -13,38 +13,38 @@ struct GameSettings {
         var hand: Array<String> = []
         var cardSum: Int = 0
         var bustedHand: Bool = false
+        var backsideCard: Bool = false
         init(name: String) {
             self.name = name
         }
     }
     private(set) var handValues = ["2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11] // how hand values are calculated
-    private(set) var money: Double = 100000 // users money
-    private(set) var dealer = Player(name: "Dealer") // initalizing dealer
-    private(set) var user: Player = Player(name: "You") // initalizing user
-    private(set) var deck: Array<String> = [] // deck, will be initalized in init()
-    private(set) var betAmount: Double = 5000 // FIXME: make it so that user can choose bet amount
+    private(set) var money: Int = 100000 // users money
+    private(set) var dealer: Player = Player(name: "Dealer")
+    private(set) var user: Player = Player(name: "You")
+    private(set) var deck: Array<String> = []
     private(set) var liveHand: Bool = false // checks if hand is currently being played
     
-    init() { // will get the betAmount each hand from the player in the view, deck also gets initalized here
+    init() {
         deck = initalizeDeck()
     }
 
-    mutating func newHand() -> () {
-        if money < betAmount || liveHand {
+    mutating func newHand(bet: Int) -> () {
+        if money < bet || liveHand {
             print("Please select a valid action")
             return
         }
-        resetHand()
+        resetHand(bet: bet)
         debuggingStatements()
         if user.cardSum == 21 {
             print("Blackjack!")
-            money += ((betAmount * 2) * (3/2))
+            money += (bet * 5/2)
             liveHand = false
             return
         }
     }
     
-    mutating func userHit() -> () {
+    mutating func userHit(){
         if !liveHand {
             print("Please select a valid action")
             return
@@ -55,9 +55,9 @@ struct GameSettings {
         if user.bustedHand {
             print("You busted!")
             liveHand = false
-            return
         }
     }
+    
     
     mutating func cardHit(player: Player) -> Player {
         var myPlayer = player
@@ -95,7 +95,8 @@ struct GameSettings {
         return myPlayer
     }
     
-    mutating func double() -> () {
+    mutating func double(bet: Int) -> () {
+        var betAmount = bet
         if !liveHand || money < betAmount {
             print("Please select a valid action")
             return
@@ -109,53 +110,76 @@ struct GameSettings {
             liveHand = false
             return
         }
-        dealerTurn()
+        dealerTurn(bet: betAmount)
     }
-    mutating func stand() -> () {
+    mutating func stand(bet: Int) -> () {
         if !liveHand {
             print("Please select a valid action")
             return
         }
         print("|||||||||||| USER STANDS |||||||||||| \n")
-        dealerTurn()
+        removeBSC()
+        dealerTurn(bet: bet)
     }
     
-    mutating func dealerTurn() -> () {
+    mutating func dealerTurn(bet: Int) -> () {
         print("Time for the dealer to draw cards")
+        removeBSC()
         while !dealer.bustedHand {
             print(" ||||||||| DEALER HITS ||||||||| \n")
             dealer = cardHit(player: dealer)
-            print("Dealer hand: \(dealer.hand)")
-            print("Dealer sum: \(dealer.cardSum)")
+            debuggingStatements()
             if dealer.cardSum > 16 && dealer.cardSum < 22 {
                 print(" ||||||||| DEALER STANDS ||||||||| \n")
-                print("Dealer hand: \(dealer.hand)")
-                print("Dealer sum: \(dealer.cardSum)")
-                compareHands()
+                compareHands(bet: bet)
                 return
             }
         }
         debuggingStatements()
         print("Dealer busted! You win")
-        money += (betAmount * 2)
+        money += (bet * 2)
     }
     
-    mutating func compareHands() -> () {
+    mutating func compareHands(bet: Int) -> () {
         debuggingStatements()
         if user.cardSum > dealer.cardSum {
             print(" ||||||||| USER WINS ||||||||| \n")
-            money += (betAmount * 2)
+            money += (bet * 2)
             liveHand = false
             return
         }
         else if user.cardSum == dealer.cardSum {
             print(" ||||||||| PUSH ||||||||| \n")
-            money += betAmount
+            money += bet
             liveHand = false
             return
         }
         print(" ||||||||| DEALER WINS ||||||||| \n")
         liveHand = false
+    }
+    
+    
+    mutating func resetHand(bet: Int) { // helper function for newHand
+        user = Player(name: user.name)
+        dealer = Player(name: dealer.name)
+        deck.removeAll()
+        deck = initalizeDeck()
+        liveHand = true
+        money -= bet
+        userHit(); userHit()
+        dealer = cardHit(player: dealer)
+        dealer.hand.append("backside")
+        dealer.backsideCard.toggle()
+    }
+    
+    
+    mutating func removeBSC(){ // function that removes the dealer backside card
+        if dealer.backsideCard {
+            if let BSC = dealer.hand.firstIndex(of: "backside") {
+                dealer.hand.remove(at: BSC)
+                dealer.backsideCard.toggle()
+            }
+        }
     }
     
     mutating func initalizeDeck() -> [String]{ // helper function to initalize our deck which will consist of 4 standard poker decks
@@ -168,18 +192,6 @@ struct GameSettings {
             }
         }
         return cardDeck.shuffled()
-    }
-
-    mutating func resetHand() { // helper function for newHand
-        user = Player(name: user.name)
-        dealer = Player(name: dealer.name)
-        deck.removeAll()
-        deck = initalizeDeck()
-        liveHand = true
-        betAmount = 5000; money -= betAmount
-        user = cardHit(player: user)
-        user = cardHit(player: user)
-        dealer = cardHit(player: dealer)
     }
     
     func debuggingStatements() { // for debugging
