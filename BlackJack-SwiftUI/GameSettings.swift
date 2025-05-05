@@ -6,7 +6,7 @@
 //
 
 import Foundation
-// FIXME: Figure out bet amount
+// MARK: Model, all print statements are for debugging!
 struct GameSettings {
     struct Player { // Blueprint for a player, also used for dealer
         var name: String

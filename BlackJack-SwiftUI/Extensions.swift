@@ -1,6 +1,5 @@
 //
 //  Extensions.swift
-//  FinalSetGame
 //
 //  Created by Zheen Suseyi on 2/23/25.
 //

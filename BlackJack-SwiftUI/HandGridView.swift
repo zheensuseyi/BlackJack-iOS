@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+// MARK: Struct for rending the dealers and players hand!
 struct HandGridView: View {
     let items: [String]
     var rows: [GridItem] {
