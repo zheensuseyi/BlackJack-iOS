@@ -88,6 +88,15 @@ struct contentViewTextModifer: ViewModifier {
     }
 }
 
+struct boldHeadLineModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.headline)
+            .fontWeight(.bold)
+    }
+}
+
+
 // MARK: View extensions
 extension View {
     // MARK: Custom BG gradients
@@ -133,6 +142,18 @@ extension View {
     }
     public func contentViewModifier() -> some View {
         modifier(contentViewTextModifer())
+    }
+    public func boldHeadLine() -> some View {
+        modifier(boldHeadLineModifier())
+    }
+}
+
+extension Image {
+    func imageSizeAdjust(width: CGFloat, height: CGFloat) -> some View {
+        self
+            .resizable()
+            .frame(width: width, height: height)
+            .foregroundStyle(.white)
     }
 }
 

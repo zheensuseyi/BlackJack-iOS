@@ -6,11 +6,20 @@
 //
 
 import SwiftUI
-// FIXME: Work on VM
+// FIXME: FIX ALERTS
 class BlackJackStore: ObservableObject {
-    @Published var betAmount: Int = 5000
-    @Published private var game: GameSettings = GameSettings()
+    // MARK: viewmodel variables
+    @Published var bet: Int = 5000 // default bet, can be changed by user
+    @Published private var game: GameSettings = GameSettings() // initalizing viewmodel here
+    @Published var gameChange: Bool = false
+    var gameAlert: Alert { // this alert only gets called if gameChange = true
+        let myAlert = Alert(title: Text("Hand Over"), message: Text("Your Card Sum was \(user.cardSum)"), dismissButton: .default(Text("close")))
+        gameChange = false
+        return myAlert
+    }
+    private var invalid = "Please select a valid action" // for debugging, might get turned into an alert
     
+    // MARK: model variables
     var user: GameSettings.Player {
         game.user
     }
@@ -24,34 +33,60 @@ class BlackJackStore: ObservableObject {
         game.liveHand
     }
     
+    
+    // MARK: Model functions, validing these functions can be used here in the VM
     func newHand() {
-        game.newHand(bet: betAmount)
+        if money < bet || liveHand { // if a hand is in progress or money is less then the bet, exit
+            print(invalid)
+            return
+        }
+        game.newHand(bet: bet)
     }
     func hit() {
+        if !liveHand {
+            print(invalid)
+            return
+        }
         game.userHit()
+        if !liveHand {
+            gameChange = true
+        }
     }
     func stand() {
-        game.stand(bet: betAmount)
+        if !liveHand {
+            print(invalid)
+            return
+        }
+        game.stand(bet: bet)
+        if !liveHand {
+            gameChange = true
+        }
     }
     func double() {
-        game.double(bet: betAmount)
+        if money < bet || !liveHand  {
+            print(invalid)
+            return
+        }
+        game.double(bet: bet)
+        if !liveHand {
+            gameChange = true
+        }
     }
     
-    func increaseBetAmount() -> () {
-        if betAmount >= money || game.liveHand {
+    
+    // MARK: VM functions, these functions are strictly used for the view
+    func increaseBetAmount() {
+        if bet >= money || game.liveHand {
+            print(invalid)
             return
         }
-        betAmount += 5000
+        bet += 5000
     }
-    func decreaseBetAmount() -> () {
-        if betAmount <= 0 || game.liveHand {
+    func decreaseBetAmount() {
+        if bet <= 0 || game.liveHand {
             return
         }
-        betAmount -= 5000
+        bet -= 5000
     }
 }
 
-/*#Preview {
-    BlackJackStore(game: game)
-}
-*/

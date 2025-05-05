@@ -18,89 +18,75 @@ struct GameSettings {
             self.name = name
         }
     }
+
     private(set) var handValues = ["2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 10, "Q": 10, "K": 10, "A": 11] // how hand values are calculated
     private(set) var money: Int = 100000 // users money
-    private(set) var dealer: Player = Player(name: "Dealer")
-    private(set) var user: Player = Player(name: "You")
-    private(set) var deck: Array<String> = []
+    private(set) var dealer: Player = Player(name: "Dealer") // dealer
+    private(set) var user: Player = Player(name: "You") // player
+    private(set) var deck: Array<String> = [] // deck which gets initalized in init()
     private(set) var liveHand: Bool = false // checks if hand is currently being played
     
     init() {
-        deck = initalizeDeck()
+        deck = initalizeDeck() // initalizing deck
     }
 
-    mutating func newHand(bet: Int) -> () {
-        if money < bet || liveHand {
-            print("Please select a valid action")
-            return
-        }
-        resetHand(bet: bet)
-        debuggingStatements()
-        if user.cardSum == 21 {
+    mutating func newHand(bet: Int) {
+        resetHand(bet: bet) // calling helper func
+        debuggingStatements() // for debugging
+        if user.cardSum == 21 { // if blackjack, pay user and end the hand
             print("Blackjack!")
             money += (bet * 5/2)
             liveHand = false
-            return
         }
     }
     
-    mutating func userHit(){
-        if !liveHand {
-            print("Please select a valid action")
-            return
-        }
+    mutating func userHit() {
         print("|||||||||||| USER HITS |||||||||||| \n")
         user = cardHit(player: user)
         debuggingStatements()
         if user.bustedHand {
-            print("You busted!")
+            print("|||||||||||| USER BUSTED |||||||||||| \n")
             liveHand = false
         }
     }
     
     
-    mutating func cardHit(player: Player) -> Player {
+    mutating func cardHit(player: Player) -> Player { // generic hit function used by both user and dealer
         var myPlayer = player
-        deck.shuffle()
-        myPlayer.hand.append(deck.popLast()!)
-        myPlayer = calculateHandValue(player: myPlayer)
+        deck.shuffle() // shuffles deck
+        myPlayer.hand.append(deck.popLast()!) // appends the last card from the deck
+        myPlayer = calculateHandValue(player: myPlayer) // calculates cardSum (current hand value)
         return myPlayer
     }
     
-    mutating func calculateHandValue(player: Player) -> Player {
+    mutating func calculateHandValue(player: Player) -> Player { // generic function to calculate hand value
         var myPlayer = player
         myPlayer.cardSum = 0
-        for card in 0..<myPlayer.hand.count {
-            let cardValue = myPlayer.hand[card].components(separatedBy: "-")
-            myPlayer.cardSum += handValues[cardValue[0]]!
+        for index in 0..<myPlayer.hand.count {
+            let cards = myPlayer.hand[index].components(separatedBy: "-")
+            myPlayer.cardSum += handValues[cards[0]]! // this dictionary is how we calculate card value
         }
-        if myPlayer.cardSum > 21 {
-            myPlayer = aceCheck(player: myPlayer)
+        myPlayer = myPlayer.cardSum > 21 ? aceCheck(player: myPlayer) : myPlayer // if hand value > 21, then check for ace
+        if myPlayer.cardSum > 21 { // if still > 21, its a busted hand
+            myPlayer.bustedHand.toggle()
+            liveHand = false
         }
         return myPlayer
     }
     
     mutating func aceCheck(player: Player) -> Player {
         var myPlayer = player
-        for card in 0..<myPlayer.hand.count {
-            let cardValue = myPlayer.hand[card].components(separatedBy: "-")
-            if cardValue[0] == "A" {
+        for index in 0..<myPlayer.hand.count {
+            let cards = myPlayer.hand[index].components(separatedBy: "-")
+            if cards[0] == "A" {
                 myPlayer.cardSum -= 10
             }
-        }
-        if myPlayer.cardSum > 21 {
-            myPlayer.bustedHand = true
-            liveHand = false
         }
         return myPlayer
     }
     
-    mutating func double(bet: Int) -> () {
+    mutating func double(bet: Int) {
         var betAmount = bet
-        if !liveHand || money < betAmount {
-            print("Please select a valid action")
-            return
-        }
         print("|||||||||||| USER DOUBLES |||||||||||| \n")
         money -= betAmount; betAmount *= 2
         user = cardHit(player: user)
@@ -110,21 +96,12 @@ struct GameSettings {
             liveHand = false
             return
         }
-        dealerTurn(bet: betAmount)
-    }
-    mutating func stand(bet: Int) -> () {
-        if !liveHand {
-            print("Please select a valid action")
-            return
-        }
-        print("|||||||||||| USER STANDS |||||||||||| \n")
-        removeBSC()
-        dealerTurn(bet: bet)
+        stand(bet: betAmount)
     }
     
-    mutating func dealerTurn(bet: Int) -> () {
-        print("Time for the dealer to draw cards")
-        removeBSC()
+    mutating func stand(bet: Int) {
+        print("|||||||||||| USER STANDS |||||||||||| \n")
+        removeBackSideCard()
         while !dealer.bustedHand {
             print(" ||||||||| DEALER HITS ||||||||| \n")
             dealer = cardHit(player: dealer)
@@ -132,37 +109,37 @@ struct GameSettings {
             if dealer.cardSum > 16 && dealer.cardSum < 22 {
                 print(" ||||||||| DEALER STANDS ||||||||| \n")
                 compareHands(bet: bet)
+                liveHand = false
                 return
             }
         }
-        debuggingStatements()
-        print("Dealer busted! You win")
-        money += (bet * 2)
+        userWins(bet: bet)
     }
     
-    mutating func compareHands(bet: Int) -> () {
+    mutating func userWins(bet: Int) {
+        debuggingStatements()
+        print("Congrats! You win")
+        money += (bet * 2)
+        liveHand = false
+    }
+    
+    mutating func compareHands(bet: Int) {
         debuggingStatements()
         if user.cardSum > dealer.cardSum {
             print(" ||||||||| USER WINS ||||||||| \n")
             money += (bet * 2)
-            liveHand = false
             return
         }
         else if user.cardSum == dealer.cardSum {
             print(" ||||||||| PUSH ||||||||| \n")
             money += bet
-            liveHand = false
             return
         }
         print(" ||||||||| DEALER WINS ||||||||| \n")
-        liveHand = false
     }
     
-    
     mutating func resetHand(bet: Int) { // helper function for newHand
-        user = Player(name: user.name)
-        dealer = Player(name: dealer.name)
-        deck.removeAll()
+        user = Player(name: user.name); dealer = Player(name: dealer.name)
         deck = initalizeDeck()
         liveHand = true
         money -= bet
@@ -172,8 +149,7 @@ struct GameSettings {
         dealer.backsideCard.toggle()
     }
     
-    
-    mutating func removeBSC(){ // function that removes the dealer backside card
+    mutating func removeBackSideCard(){ // function that removes the dealer backside card
         if dealer.backsideCard {
             if let BSC = dealer.hand.firstIndex(of: "backside") {
                 dealer.hand.remove(at: BSC)
@@ -188,7 +164,7 @@ struct GameSettings {
         let names = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
         for suit in suits {
             for name in names {
-                cardDeck += Array(repeating: (name + suit), count: 4)
+                cardDeck.append(name + suit)
             }
         }
         return cardDeck.shuffled()
@@ -203,15 +179,5 @@ struct GameSettings {
 
 }
 
-/*
- 
- 
- MARK: Intent
- 
- What does my BlackJack game need?
- 
- Multiple Decks
- a way to keep track of players money,
- a way for a player to be dealt a hand,
- a way for a player to split, double, hit, stand, surrender, and buy insurance
- */
+
+
