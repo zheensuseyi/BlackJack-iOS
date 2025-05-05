@@ -12,6 +12,12 @@ extension Image {
     static let star: Image = Image(systemName: "star.fill")
     static let triangle: Image = Image(systemName: "triangle.fill")
     static let circle: Image = Image(systemName: "circle.fill")
+    func imageSizeAdjust(width: CGFloat, height: CGFloat) -> some View {
+        self
+            .resizable()
+            .frame(width: width, height: height)
+            .foregroundStyle(.white)
+    }
 }
 
 // MARK: Color extensions
@@ -97,6 +103,7 @@ struct boldHeadLineModifier: ViewModifier {
 }
 
 
+
 // MARK: View extensions
 extension View {
     // MARK: Custom BG gradients
@@ -146,14 +153,19 @@ extension View {
     public func boldHeadLine() -> some View {
         modifier(boldHeadLineModifier())
     }
-}
-
-extension Image {
-    func imageSizeAdjust(width: CGFloat, height: CGFloat) -> some View {
-        self
-            .resizable()
-            .frame(width: width, height: height)
-            .foregroundStyle(.white)
+    
+    public func gameAlert(
+        title: String,
+        isPresented: Binding<Bool>,
+        message: @escaping () -> Text
+    ) -> some View {
+        self.alert(title, isPresented: isPresented) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            message()
+        }
     }
 }
+
+
 

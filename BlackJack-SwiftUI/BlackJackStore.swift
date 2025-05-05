@@ -8,23 +8,24 @@
 import SwiftUI
 // FIXME: FIX ALERTS
 class BlackJackStore: ObservableObject {
-    // MARK: viewmodel variables
-    @Published var bet: Int = 5000 // default bet, can be changed by user
-    @Published private var game: GameSettings = GameSettings() // initalizing viewmodel here
-    @Published var gameChange: Bool = false
-    var gameAlert: Alert { // this alert only gets called if gameChange = true
-        let myAlert = Alert(title: Text("Hand Over"), message: Text("Your Card Sum was \(user.cardSum)"), dismissButton: .default(Text("close")))
-        gameChange = false
-        return myAlert
+    // MARK: Viewmodel Variables that get affected by the view
+    @Published private var game: GameSettings
+    @Published var bet: Int = 5000
+    
+    // MARK: Variables for alerts
+    @Published var userWin: Bool = false
+    @Published var dealerWin: Bool = false
+    @Published var push: Bool = false
+    init() {
+        game = GameSettings()
     }
-    private var invalid = "Please select a valid action" // for debugging, might get turned into an alert
     
     // MARK: model variables
-    var user: GameSettings.Player {
-        game.user
-    }
     var money: Int {
         game.money
+    }
+    var user: GameSettings.Player {
+        game.user
     }
     var dealer: GameSettings.Player {
         game.dealer
@@ -34,33 +35,37 @@ class BlackJackStore: ObservableObject {
     }
     
     
-    // MARK: Model functions, validing these functions can be used here in the VM
-    func newHand() {
+    // MARK: Core Game functions! Validation done at the view/user level while the actual logic is done at the model!
+    func newHand() { // New Hand
         if money < bet || liveHand { // if a hand is in progress or money is less then the bet, exit
             print(invalid)
             return
         }
+        userWin = false
+        dealerWin = false
+        push = false
         game.newHand(bet: bet)
+        userWin = liveHand == false ? true : false // if a user hits a blackjack, the alert will still pop up
     }
-    func hit() {
-        if !liveHand {
+    func hit() { // Add card to users hand
+        if !liveHand { // if a hand isn't in progress, this will do nothing
             print(invalid)
             return
         }
         game.userHit()
-        if !liveHand {
-            gameChange = true
-        }
+        dealerWin = user.bustedHand // if dealer wins, then an alert will pop up
     }
-    func stand() {
-        if !liveHand {
+    func stand() { // User stands, turn ends
+        if !liveHand { // if a hand isn't in progress, this will do nothing
             print(invalid)
             return
         }
         game.stand(bet: bet)
-        if !liveHand {
-            gameChange = true
-        }
+        
+        // MARK: checking to see who won for alert
+        dealerWin = dealer.cardSum > user.cardSum && dealer.bustedHand != true
+        userWin = user.cardSum > dealer.cardSum  && user.bustedHand != true
+        push = user.cardSum == dealer.cardSum
     }
     func double() {
         if money < bet || !liveHand  {
@@ -68,25 +73,28 @@ class BlackJackStore: ObservableObject {
             return
         }
         game.double(bet: bet)
-        if !liveHand {
-            gameChange = true
-        }
+        
+        // MARK: checking to see who won for alert
+        dealerWin = user.bustedHand
+        userWin = dealer.bustedHand
     }
     
     
     // MARK: VM functions, these functions are strictly used for the view
-    func increaseBetAmount() {
-        if bet >= money || game.liveHand {
+    func increaseBetAmount() { // user increase bet amount
+        if bet >= money || game.liveHand { // if bet amount higher then user money or if currently in a live hand, exit
             print(invalid)
             return
         }
         bet += 5000
     }
-    func decreaseBetAmount() {
-        if bet <= 0 || game.liveHand {
+    func decreaseBetAmount() { // user decrease bet amount
+        if bet <= 0 || game.liveHand { // if bet amount lower then 0 or if currently in a live hand, exit
             return
         }
         bet -= 5000
     }
+    
+    private var invalid = "Please select a valid action" // for debugging
 }
 

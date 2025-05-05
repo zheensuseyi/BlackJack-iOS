@@ -15,12 +15,9 @@ struct HandGridView: View {
     var body: some View {
         LazyHGrid(rows: rows, spacing: 10) {
             ForEach(items, id: \.self) { item in
-                withAnimation {
-                    Image(item)
-                        .imageSizeAdjust(width: 100, height: 100)
-                }
+                Image(item)
+                    .imageSizeAdjust(width: 100, height: 100)
             }
-            
         }
         .padding()
     }
