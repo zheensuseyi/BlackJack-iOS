@@ -1,2 +1,3 @@
 Fully Functioning Blackjack game developed for iOS using Swift and SwiftUI.
-![Alt text]([/relative/path/to/img.jpg?raw=true "Optional Title](https://github.com/zheensuseyi/BlackJack-iOS/tree/master/BlackJack-iOS-Screenshots/1)")
+
+![Alt text](/BlackJack-iOS/tree/master/BlackJack-iOS-Screenshots/img.jpg?raw=true "1.png")
