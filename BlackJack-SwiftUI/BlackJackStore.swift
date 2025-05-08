@@ -61,10 +61,12 @@ class BlackJackStore: ObservableObject {
             return
         }
         game.stand(bet: bet)
-        
         // MARK: checking to see who won for alert
         dealerWin = dealer.cardSum > user.cardSum && dealer.bustedHand != true
         userWin = user.cardSum > dealer.cardSum  && user.bustedHand != true
+        if !userWin { // edge case for where dealer gets a busted hand
+            userWin = dealer.bustedHand
+        }
         push = user.cardSum == dealer.cardSum
     }
     func double() {
